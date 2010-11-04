@@ -1,0 +1,33 @@
+<?php
+
+class SspValidatorGMap extends sfValidatorBase
+{
+  /**
+   * Configures the current validator.
+   *
+   * Available options:
+   *
+   *  * username:      The model class (required)
+   *
+   * @see sfValidatorBase
+   */
+  protected function configure($options = array(), $messages = array())
+  {
+    $this->setMessage('invalid', 'WRONG_ADDRESS_%address%');
+  }
+
+  /**
+   * @see sfValidatorBase
+   */
+  protected function doClean($value)
+  {
+    $map = new GMap();
+    $address = new GMapGeocodedAddress($value);
+    if($address->geocode($map->getGMapClient()))
+      {
+	return $value;
+      }
+
+    throw new sfValidatorError($this, 'invalid',array('address'=>$value));
+  }
+}
